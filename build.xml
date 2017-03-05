@@ -1,0 +1,95 @@
+<project name="ElevatorGUIApplication" default="main">
+
+    <property name="out" value="./out"/>
+    <property name="src" value="./src"/>
+    <property name="jar" value="./jar"/>
+    <property name="tests" value="./tests"/>
+
+    <path id="lib">
+        <fileset dir="./lib" includes="*.jar"/>
+    </path>
+
+    <macrodef name="compile">
+        <sequential>
+            <delete dir="${jar}"/>
+            <mkdir dir="${jar}"/>
+            <delete dir="${out}"/>
+            <mkdir dir="${out}"/>
+            <copy file="${src}/config.property" todir="${out}"/>
+            <copy file="${src}/log4j2.xml" todir="${out}"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Direction.java"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/TransportationState.java"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Passenger.java"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Container.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Story.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/ElevatorContainer.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/DispatchArrivalContainer.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Building.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Generator.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Controller.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/TransportationTask.java" classpathref="lib"/>
+            <javac srcdir="${src}" destdir="${out}" includeantruntime="false" includes="**/Runner.java" classpathref="lib"/>
+
+            <jar destfile="${jar}/Elevator.jar" basedir="${out}">
+                <manifest>
+                    <attribute name="Runner" value="Runner"/>
+                </manifest>
+            </jar>
+
+            <copy file="${tests}/CorrectDataConfig.property" todir="${out}"/>
+            <copy file="${tests}/CorrectShortConfig.property" todir="${out}"/>
+            <copy file="${tests}/WrongCapacityValue.property" todir="${out}"/>
+            <copy file="${tests}/WrongDataConfig.property" todir="${out}"/>
+            <copy file="${tests}/WrongPasNumber.property" todir="${out}"/>
+            <copy file="${tests}/WrongStoriesNumber.property" todir="${out}"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/PassengerTest.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/GeneratorTest.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/StoryTest.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/ElevatorContainerTest.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/DispatchArrivalContainerTest.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/Building.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/ControllerTest.java" classpathref="lib"/>
+            <javac srcdir="${tests}" destdir="${out}" includeantruntime="false" includes="**/TransportationTaskTest.java" classpathref="lib"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="run">
+        <sequential>
+            <java classname="Runner" fork="true">
+                <classpath>
+                    <path refid="lib"/>
+                    <path location="${jar}/Elevator.jar"/>
+                </classpath>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="tests">
+        <sequential>
+            <junit printsummary="yes" haltonfailure="yes" fork="true">
+                <classpath>
+                    <path refid="lib"/>
+                    <pathelement location="${out}"/>
+                </classpath>
+                <formatter type="brief" usefile="false" />
+                <batchtest fork="yes">
+                    <fileset dir="${tests}" includes="**/PassengerTest.java" />
+                    <fileset dir="${tests}" includes="**/ElevatorContainerTest.java" />
+                    <fileset dir="${tests}" includes="**/Story.java" />
+                    <fileset dir="${tests}" includes="**/GeneratorTest.java" />
+                    <fileset dir="${tests}" includes="**/DispatchArrivalContainerTest.java" />
+                    <fileset dir="${tests}" includes="**/Building.java" />
+                    <fileset dir="${tests}" includes="**/ControllerTest.java" />
+                    <fileset dir="${tests}" includes="**/TransportationTaskTest.java" />
+                </batchtest>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <target name="main">
+        <compile/>
+        <tests/>
+        <run/>
+    </target>
+
+</project>
